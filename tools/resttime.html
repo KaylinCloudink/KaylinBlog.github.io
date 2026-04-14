@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>灵动倒计时 | 可调时间·进度条·深浅色</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* 浅色主题 (默认) */
+        :root {
+            --bg-gradient-start: #f8fafc;
+            --bg-gradient-end: #e2e8f0;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --progress-bg: #e2e8f0;
+            --progress-fill: linear-gradient(90deg, #3b82f6, #06b6d4);
+            --border-light: #cbd5e1;
+            --btn-bg: #f1f5f9;
+            --btn-hover: #e2e8f0;
+            --danger-bg: #fee2e2;
+            --danger-text: #dc2626;
+            --success-text: #10b981;
+            --input-bg: #ffffff;
+        }
+
+        /* 深色主题 */
+        body.dark {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-bg: rgba(30, 41, 59, 0.94);
+            --card-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.6);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent-color: #60a5fa;
+            --accent-hover: #3b82f6;
+            --progress-bg: #334155;
+            --progress-fill: linear-gradient(90deg, #60a5fa, #38bdf8);
+            --border-light: #475569;
+            --btn-bg: #334155;
+            --btn-hover: #475569;
+            --danger-bg: #450a0a;
+            --danger-text: #f87171;
+            --success-text: #34d399;
+            --input-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* 主卡片 */
+        .countdown-card {
+            max-width: 680px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(2px);
+            border-radius: 2.5rem;
+            box-shadow: var(--card-shadow);
+            padding: 2rem 1.8rem 2.2rem 1.8rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+
+        /* 头部：标题+主题按钮 */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.8rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(120deg, var(--accent-color), #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .theme-toggle {
+            background: var(--btn-bg);
+            border: none;
+            border-radius: 60px;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .theme-toggle:hover {
+            background: var(--btn-hover);
+            transform: scale(0.96);
+        }
+
+        /* 倒计时数字区 */
+        .time-digits {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            margin: 2rem 0 1.5rem;
+            flex-wrap: wrap;
+        }
+        .time-block {
+            flex: 1;
+            text-align: center;
+            background: var(--btn-bg);
+            padding: 1rem 0.2rem;
+            border-radius: 1.8rem;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.02), 0 6px 12px -8px rgba(0,0,0,0.2);
+        }
+        .time-number {
+            font-size: 2.7rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            line-height: 1.2;
+            letter-spacing: 2px;
+        }
+        .time-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        @media (max-width: 480px) {
+            .time-number { font-size: 2rem; }
+            .time-digits { gap: 0.5rem; }
+            .countdown-card { padding: 1.5rem; }
+        }
+
+        /* 进度条区域 */
+        .progress-section {
+            margin: 1.5rem 0 1rem;
+        }
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .progress-bar-container {
+            background-color: var(--progress-bg);
+            border-radius: 100px;
+            height: 14px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: var(--progress-fill);
+            border-radius: 100px;
+            transition: width 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 0 4px rgba(59,130,246,0.4);
+        }
+        .percent-text {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* 控制区 */
+        .control-panel {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-light);
+            padding-top: 1.5rem;
+        }
+        .datetime-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.6rem;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        .datetime-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+        #targetDateTime {
+            flex: 2;
+            background: var(--input-bg);
+            border: 1px solid var(--border-light);
+            padding: 12px 14px;
+            border-radius: 40px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.2s;
+        }
+        #targetDateTime:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        .quick-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex: 2;
+        }
+        .quick-btn {
+            background: var(--btn-bg);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: 0.2s;
+            font-family: monospace;
+        }
+        .quick-btn:hover {
+            background: var(--accent-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+        .status-message {
+            font-size: 0.8rem;
+            margin-top: 12px;
+            color: var(--danger-text);
+            text-align: center;
+            font-weight: 500;
+        }
+        .footer-note {
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 1.5rem;
+            border-top: 1px dashed var(--border-light);
+            padding-top: 1rem;
+        }
+        button {
+            background: none;
+            border: none;
+        }
+        .reset-tip {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="countdown-card">
+        <div class="card-header">
+            <h1>⏳ 灵动倒计时</h1>
+            <button class="theme-toggle" id="themeToggle" aria-label="深浅色切换">🌙</button>
+        </div>
+
+        <!-- 倒计时显示区域 -->
+        <div class="time-digits">
+            <div class="time-block">
+                <div class="time-number" id="days">0</div>
+                <div class="time-label">天</div>
+            </div>
+            <div class="time-block">
+                <div class="time-number" id="hours">0</div>
+                <div class="time-label">时</div>
+            </div>
+            <div class="time-block">
+                <div class="time-number" id="minutes">0</div>
+                <div class="time-label">分</div>
+            </div>
+            <div class="time-block">
+                <div class="time-number" id="seconds">0</div>
+                <div class="time-label">秒</div>
+            </div>
+        </div>
+
+        <!-- 进度条组件 -->
+        <div class="progress-section">
+            <div class="progress-info">
+                <span>⏱️ 倒计时进度</span>
+                <span class="percent-text" id="percentValue">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- 自由调整时间区 -->
+        <div class="control-panel">
+            <div class="datetime-label">📅 自由设定目标时间</div>
+            <div class="datetime-wrapper">
+                <input type="datetime-local" id="targetDateTime">
+                <div class="quick-buttons">
+                    <button class="quick-btn" data-adjust="day_add">+1天</button>
+                    <button class="quick-btn" data-adjust="day_sub">-1天</button>
+                    <button class="quick-btn" data-adjust="hour_add">+1时</button>
+                    <button class="quick-btn" data-adjust="hour_sub">-1时</button>
+                </div>
+            </div>
+            <div class="status-message" id="statusMsg"></div>
+        </div>
+        <div class="footer-note">
+            🎯 点击「+1天 / -1时」自由微调 · 进度条实时同步
+        </div>
+    </div>
+
+    <script>
+        // ----- DOM 元素 -----
+        const daysSpan = document.getElementById('days');
+        const hoursSpan = document.getElementById('hours');
+        const minutesSpan = document.getElementById('minutes');
+        const secondsSpan = document.getElementById('seconds');
+        const progressFill = document.getElementById('progressFill');
+        const percentSpan = document.getElementById('percentValue');
+        const targetDateTimeInput = document.getElementById('targetDateTime');
+        const statusMsgDiv = document.getElementById('statusMsg');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // ----- 倒计时全局变量 -----
+        let countdownInterval = null;       // 定时器ID
+        let currentTargetDate = null;       // Date对象 (目标时刻)
+        let startBaseTime = null;            // 锚点起始时刻 (用户设定目标时的当前时刻)
+        let totalDurationMs = 0;             // 设定的总时长 (target - startBaseTime)
+        let isValidCountdown = false;        // 当前倒计时是否有效(未过期且未归零)
+
+        // ----- 辅助函数 -----
+        // 将Date转为 datetime-local 接受的格式 (yyyy-mm-ddThh:mm:ss)
+        function formatToDateTimeLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        }
+
+        // 显示剩余时间 (天/时/分/秒)
+        function displayRemainingTime(remainingMs) {
+            if (remainingMs <= 0) {
+                daysSpan.innerText = '0';
+                hoursSpan.innerText = '0';
+                minutesSpan.innerText = '0';
+                secondsSpan.innerText = '0';
+                return;
+            }
+            const totalSeconds = Math.floor(remainingMs / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            daysSpan.innerText = days;
+            hoursSpan.innerText = hours;
+            minutesSpan.innerText = minutes;
+            secondsSpan.innerText = seconds;
+        }
+
+        // 更新进度条和百分比 (剩余 / 总时长)
+        function updateProgressBar(remainingMs) {
+            if (!isValidCountdown || totalDurationMs <= 0 || remainingMs <= 0) {
+                if (remainingMs <= 0) {
+                    progressFill.style.width = '0%';
+                    percentSpan.innerText = '0%';
+                } else if (totalDurationMs <= 0) {
+                    progressFill.style.width = '0%';
+                    percentSpan.innerText = '0%';
+                } else {
+                    // 容错
+                    progressFill.style.width = '0%';
+                    percentSpan.innerText = '0%';
+                }
+                return;
+            }
+            let percent = (remainingMs / totalDurationMs) * 100;
+            percent = Math.min(100, Math.max(0, percent));
+            progressFill.style.width = `${percent}%`;
+            percentSpan.innerText = `${Math.floor(percent)}%`;
+        }
+
+        // 核心刷新倒计时 (基于当前时刻)
+        function refreshCountdown() {
+            if (!isValidCountdown || !currentTargetDate || !startBaseTime || totalDurationMs <= 0) {
+                // 无效状态时，确保显示清0/进度条归零 (但不要干扰用户)
+                if (!isValidCountdown) {
+                    displayRemainingTime(0);
+                    progressFill.style.width = '0%';
+                    percentSpan.innerText = '0%';
+                }
+                return;
+            }
+
+            const now = new Date();
+            const remaining = currentTargetDate - now;
+            
+            if (remaining <= 0) {
+                // 倒计时结束
+                displayRemainingTime(0);
+                progressFill.style.width = '0%';
+                percentSpan.innerText = '0%';
+                // 如果计时器还在，清除并标记无效
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                isValidCountdown = false;
+                statusMsgDiv.innerText = '✨ 倒计时已结束！可重新设定未来时间 ✨';
+                statusMsgDiv.style.color = 'var(--success-text)';
+                return;
+            }
+            
+            // 显示剩余时间
+            displayRemainingTime(remaining);
+            // 更新进度条
+            updateProgressBar(remaining);
+        }
+
+        // 停止当前计时器
+        function stopCountdownTimer() {
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+            }
+        }
+
+        // 启动计时器（每秒刷新）
+        function startCountdownTimer() {
+            if (countdownInterval) stopCountdownTimer();
+            countdownInterval = setInterval(() => {
+                refreshCountdown();
+            }, 1000);
+        }
+
+        // 重置倒计时状态: 基于新的目标时间(绝对时刻)
+        // newTargetDate: Date对象，必须是未来的有效时间
+        // 返回值: boolean 是否设置成功
+        function setNewTargetDate(newTargetDate) {
+            const now = new Date();
+            // 校验目标时间必须大于当前时间（未来）
+            if (newTargetDate <= now) {
+                statusMsgDiv.innerText = '⚠️ 目标时间必须晚于当前时间，请重新选择未来时刻 ⚠️';
+                statusMsgDiv.style.color = 'var(--danger-text)';
+                return false;
+            }
+            
+            // 停止旧的计时器
+            stopCountdownTimer();
+            
+            // 记录锚点起始时间(设定这一刻)
+            startBaseTime = new Date(now);
+            currentTargetDate = new Date(newTargetDate);
+            totalDurationMs = currentTargetDate - startBaseTime;
+            
+            if (totalDurationMs <= 0) {
+                statusMsgDiv.innerText = '❌ 总时长无效，请选择更晚的时间';
+                isValidCountdown = false;
+                return false;
+            }
+            
+            isValidCountdown = true;
+            // 清除旧状态消息
+            statusMsgDiv.innerText = '✅ 倒计时已更新，进度条同步中';
+            statusMsgDiv.style.color = 'var(--success-text)';
+            setTimeout(() => {
+                if (statusMsgDiv.innerText.includes('已更新')) {
+                    statusMsgDiv.innerText = '';
+                }
+            }, 2000);
+            
+            // 立即刷新一次显示
+            refreshCountdown();
+            // 开启新计时器
+            startCountdownTimer();
+            return true;
+        }
+        
+        // 根据 datetime-local 输入框的值来设定倒计时
+        function applyDateTimeFromInput() {
+            const dateTimeStr = targetDateTimeInput.value;
+            if (!dateTimeStr) {
+                statusMsgDiv.innerText = '请先选择日期时间';
+                return false;
+            }
+            const selectedDate = new Date(dateTimeStr);
+            if (isNaN(selectedDate.getTime())) {
+                statusMsgDiv.innerText = '无效的日期格式';
+                return false;
+            }
+            const success = setNewTargetDate(selectedDate);
+            if (success) {
+                // 将输入框的值保留为当前生效的值（如有微调按钮改变会同步）
+                return true;
+            } else {
+                // 如果失败，尝试恢复输入框为上一次有效值（如果没有有效值，则恢复一个默认未来时间）
+                if (currentTargetDate && currentTargetDate > new Date()) {
+                    targetDateTimeInput.value = formatToDateTimeLocal(currentTargetDate);
+                } else {
+                    // 设置一个默认未来1天的值
+                    const defaultFuture = new Date();
+                    defaultFuture.setDate(defaultFuture.getDate() + 1);
+                    defaultFuture.setSeconds(0);
+                    targetDateTimeInput.value = formatToDateTimeLocal(defaultFuture);
+                    setNewTargetDate(defaultFuture);
+                }
+                return false;
+            }
+        }
+
+        // 初始化默认时间 (明天同一时刻)
+        function setDefaultFutureTarget() {
+            const defaultTime = new Date();
+            defaultTime.setDate(defaultTime.getDate() + 1);
+            defaultTime.setSeconds(0);
+            // 避免秒数影响视觉
+            targetDateTimeInput.value = formatToDateTimeLocal(defaultTime);
+            setNewTargetDate(defaultTime);
+        }
+
+        // ----- 快捷调整 (±天, ±时) 基于当前生效的目标时间 -----
+        function adjustTargetTime(deltaDays = 0, deltaHours = 0) {
+            if (!currentTargetDate) {
+                // 如果没有有效目标，先尝试用输入框或者默认
+                if (targetDateTimeInput.value) {
+                    const temp = new Date(targetDateTimeInput.value);
+                    if (!isNaN(temp.getTime()) && temp > new Date()) {
+                        setNewTargetDate(temp);
+                    } else {
+                        setDefaultFutureTarget();
+                    }
+                } else {
+                    setDefaultFutureTarget();
+                }
+            }
+            // 确保有currentTargetDate
+            if (!currentTargetDate) return;
+            
+            let newTarget = new Date(currentTargetDate);
+            newTarget.setDate(newTarget.getDate() + deltaDays);
+            newTarget.setHours(newTarget.getHours() + deltaHours);
+            
+            // 如果调整后的时间小于当前时间，做保护：至少设置为当前时间后5分钟，避免无效
+            const now = new Date();
+            if (newTarget <= now) {
+                newTarget = new Date(now);
+                newTarget.setMinutes(now.getMinutes() + 5);
+                newTarget.setSeconds(0);
+                statusMsgDiv.innerText = '⏰ 调整后的时间太早，自动设为5分钟后';
+                statusMsgDiv.style.color = 'var(--danger-text)';
+                setTimeout(() => {
+                    if (statusMsgDiv.innerText.includes('太早')) statusMsgDiv.innerText = '';
+                }, 1800);
+            }
+            
+            // 更新输入框的值
+            targetDateTimeInput.value = formatToDateTimeLocal(newTarget);
+            // 应用新目标
+            const success = setNewTargetDate(newTarget);
+            if (!success) {
+                // 极少情况，兜底
+                setDefaultFutureTarget();
+            }
+        }
+        
+        // ----- 主题切换逻辑 (深浅色)-----
+        function initTheme() {
+            const savedTheme = localStorage.getItem('countdownTheme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark');
+                themeToggle.innerHTML = '☀️';
+            } else {
+                document.body.classList.remove('dark');
+                themeToggle.innerHTML = '🌙';
+            }
+        }
+        function toggleTheme() {
+            if (document.body.classList.contains('dark')) {
+                document.body.classList.remove('dark');
+                localStorage.setItem('countdownTheme', 'light');
+                themeToggle.innerHTML = '🌙';
+            } else {
+                document.body.classList.add('dark');
+                localStorage.setItem('countdownTheme', 'dark');
+                themeToggle.innerHTML = '☀️';
+            }
+        }
+        
+        // ----- 监听事件与页面初始化-----
+        function bindEvents() {
+            themeToggle.addEventListener('click', toggleTheme);
+            targetDateTimeInput.addEventListener('change', function() {
+                const newDateStr = targetDateTimeInput.value;
+                if (!newDateStr) return;
+                const newDate = new Date(newDateStr);
+                if (!isNaN(newDate.getTime())) {
+                    setNewTargetDate(newDate);
+                } else {
+                    statusMsgDiv.innerText = '日期无效，请重新选择';
+                }
+            });
+            
+            // 快捷按钮
+            document.querySelectorAll('.quick-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const action = btn.getAttribute('data-adjust');
+                    if (action === 'day_add') adjustTargetTime(1, 0);
+                    else if (action === 'day_sub') adjustTargetTime(-1, 0);
+                    else if (action === 'hour_add') adjustTargetTime(0, 1);
+                    else if (action === 'hour_sub') adjustTargetTime(0, -1);
+                });
+            });
+        }
+        
+        // 页面可见性变化时，为了保证计时精准，如果计时器停止但需要刷新，重新校准（可选）
+        function handleVisibilityChange() {
+            if (!document.hidden && isValidCountdown && currentTargetDate && currentTargetDate > new Date()) {
+                // 重新刷新一下显示，确保进度与剩余时间同步
+                refreshCountdown();
+                // 如果定时器意外被清除但状态有效，重启定时器
+                if (!countdownInterval && isValidCountdown) {
+                    startCountdownTimer();
+                }
+            }
+        }
+        
+        // 清理定时器防止页面卸载残留
+        window.addEventListener('beforeunload', () => {
+            if (countdownInterval) clearInterval(countdownInterval);
+        });
+        
+        // 页面启动
+        function init() {
+            initTheme();
+            bindEvents();
+            // 设定一个合理的默认目标（明天此时）
+            const defaultDate = new Date();
+            defaultDate.setDate(defaultDate.getDate() + 1);
+            defaultDate.setSeconds(0);
+            // 处理分钟秒展示漂亮
+            targetDateTimeInput.value = formatToDateTimeLocal(defaultDate);
+            setNewTargetDate(defaultDate);
+            // 监听页面可见性，恢复计时
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+        }
+        
+        init();
+    </script>
+</body>
+</html>
