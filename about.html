@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 - 我的个人博客</title>
+    
+    <style>
+        /* ==================== 基础变量定义 ==================== */
+        :root {
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --link-color: #0066cc;
+            --link-hover: #0052a3;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --skill-bg: #f0f0f0;
+            --accent-color: #0066cc;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --link-color: #66b3ff;
+            --link-hover: #99ccff;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --skill-bg: #404040;
+            --accent-color: #66b3ff;
+        }
+
+        /* ==================== 基础样式 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* ==================== 导航栏 ==================== */
+        nav {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--link-color);
+        }
+
+        .nav-links a.active {
+            color: var(--link-color);
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--border-color);
+        }
+
+        /* ==================== 主要内容 ==================== */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* ==================== 个人资料卡片 ==================== */
+        .profile-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 50px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        /* 头像 */
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--link-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 4rem;
+            color: white;
+        }
+
+        .profile-card h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-title {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .profile-bio {
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto 25px;
+            line-height: 1.8;
+        }
+
+        /* 社交链接 */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--skill-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+
+        .social-link:hover {
+            background-color: var(--link-color);
+            transform: translateY(-3px);
+        }
+
+        /* ==================== 内容区块 ==================== */
+        .section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        /* ==================== 技能标签 ==================== */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .skill-tag {
+            background-color: var(--skill-bg);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .skill-tag:hover {
+            background-color: var(--link-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ==================== 时间线 ==================== */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--link-color);
+        }
+
+        .timeline-date {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ==================== 联系信息 ==================== */
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .contact-item:hover {
+            background-color: var(--skill-bg);
+        }
+
+        .contact-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background-color: var(--link-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .contact-info h4 {
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .contact-info p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* ==================== 页脚 ==================== */
+        footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .profile-card {
+                padding: 30px 20px;
+            }
+
+            .avatar {
+                width: 120px;
+                height: 120px;
+                font-size: 3rem;
+            }
+
+            .profile-card h1 {
+                font-size: 1.6rem;
+            }
+
+            .section {
+                padding: 25px 20px;
+            }
+
+            .timeline {
+                padding-left: 20px;
+            }
+
+            .timeline-item::before {
+                left: -24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ==================== 导航栏 ==================== -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">我的博客</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="articles.html">文章列表</a>
+                <a href="about.html" class="active">关于我</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== 主要内容 ==================== -->
+    <main>
+        <!-- 个人资料卡片 -->
+        <div class="profile-card">
+            <!-- 头像（使用emoji作为示例） -->
+            <div class="avatar">UWU</div>
+            <h1>Kaylin Cloudink</h1>
+            <p class="profile-title">高中学生</p>
+            <p class="profile-bio">
+                热爱技术，喜欢分享。在这里记录我的学习笔记、技术心得和生活感悟。
+                希望能与更多志同道合的朋友交流学习。
+            </p>
+            <!-- 社交链接 -->
+            <div class="social-links">
+                <a href="#" class="social-link" title="GitHub">🐙</a>
+                <a href="#" class="social-link" title="邮箱">✉️</a>
+                <a href="#" class="social-link" title="微信">💬</a>
+            </div>
+        </div>
+
+        <!-- 关于我 -->
+        <section class="section">
+            <h2>关于我</h2>
+            <p>
+                我是一名高中学生，这个页面只是一个初尝试
+            </p>
+        </section>
+
+        <!-- 技能 -->
+        <section class="section">
+            <h2>技能</h2>
+            <div class="skills-container">
+                <span class="skill-tag">HTML5</span>
+                <span class="skill-tag">CSS3</span>
+                <span class="skill-tag">JavaScript</span>
+                <span class="skill-tag">TypeScript</span>
+                <span class="skill-tag">Vue.js</span>
+                <span class="skill-tag">React</span>
+                <span class="skill-tag">Node.js</span>
+                <span class="skill-tag">Git</span>
+                <span class="skill-tag">Webpack</span>
+                <span class="skill-tag">Vite</span>
+                <span class="skill-tag">Tailwind CSS</span>
+            </div>
+        </section>
+
+        <!-- 联系方式 -->
+        <section class="section">
+            <h2>联系我</h2>
+            <div class="contact-list">
+                <div class="contact-item">
+                    <div class="contact-icon">✉️</div>
+                    <div class="contact-info">
+                        <h4>邮箱</h4>
+                        <p>1508036421@qq.com</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🐙</div>
+                    <div class="contact-info">
+                        <h4>GitHub</h4>
+                        <p>github.com/example</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🌐</div>
+                    <div class="contact-info">
+                        <h4>个人网站</h4>
+                        <p>www.example.com</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==================== 页脚 ==================== -->
+    <footer>
+        <p>&copy; 2026 Kaylin Cloudink. 保留所有权利.</p>
+    </footer>
+
+    <!-- ==================== JavaScript ==================== -->
+    <script>
+        /**
+         * 主题切换功能
+         * 所有页面使用相同的代码，确保主题设置在所有页面保持一致
+         */
+        
+        // 获取当前主题
+        function getCurrentTheme() {
+            return localStorage.getItem('theme') || 'light';
+        }
+
+        // 设置主题
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            updateThemeIcon(theme);
+        }
+
+        // 更新图标
+        function updateThemeIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            const currentTheme = getCurrentTheme();
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = getCurrentTheme();
+            setTheme(savedTheme);
+        });
+    </script>
+</body>
+</html>
