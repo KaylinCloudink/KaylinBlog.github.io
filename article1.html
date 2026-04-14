@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文章列表 - Kaylin的个人博客</title>
+    <title>文章测试 - Kaylin的个人博客</title>
     <link rel="icon" href="logo.ico" type="image/x-icon">
     <style>
         :root {
@@ -13,9 +13,9 @@
             --text-secondary: #666666;
             --border-color: #e0e0e0;
             --link-color: #0066cc;
-            --link-hover: #0052a3;
             --shadow: rgba(0, 0, 0, 0.1);
-            --tag-bg: #f0f0f0;
+            --code-bg: #f4f4f4;
+            --blockquote-border: #0066cc;
         }
         [data-theme="dark"] {
             --bg-color: #1a1a1a;
@@ -24,9 +24,9 @@
             --text-secondary: #b0b0b0;
             --border-color: #404040;
             --link-color: #66b3ff;
-            --link-hover: #99ccff;
             --shadow: rgba(0, 0, 0, 0.3);
-            --tag-bg: #404040;
+            --code-bg: #3d3d3d;
+            --blockquote-border: #66b3ff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { height: 100%; }
@@ -34,13 +34,13 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.8;
             transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
-        main { flex: 1; max-width: 900px; margin: 0 auto; padding: 40px 20px; width: 100%; }
+        main { flex: 1; max-width: 800px; margin: 0 auto; padding: 40px 20px; width: 100%; }
         nav {
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
@@ -56,30 +56,29 @@
         .nav-links a { color: var(--text-color); text-decoration: none; transition: color 0.3s; }
         .nav-links a:hover, .nav-links a.active { color: var(--link-color); font-weight: 500; }
         .theme-toggle { background: none; border: 1px solid var(--border-color); border-radius: 20px; padding: 8px 16px; cursor: pointer; color: var(--text-color); }
-        .page-header { margin-bottom: 40px; }
-        .page-header h1 { font-size: 2rem; margin-bottom: 10px; }
-        .article-list { display: flex; flex-direction: column; gap: 20px; }
-        .article-item {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .article-item:hover { transform: translateY(-3px); box-shadow: 0 6px 12px var(--shadow); }
-        .article-item h2 { font-size: 1.4rem; margin-bottom: 10px; }
-        .article-item h2 a { color: var(--text-color); text-decoration: none; }
-        .article-item h2 a:hover { color: var(--link-color); }
-        .article-meta { display: flex; gap: 15px; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 12px; flex-wrap: wrap; }
-        .category-tag { background-color: var(--tag-bg); padding: 4px 12px; border-radius: 20px; }
-        .read-more { color: var(--link-color); text-decoration: none; font-weight: 500; }
+        .article-header { text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 1px solid var(--border-color); }
+        .article-header h1 { font-size: 2.2rem; margin-bottom: 20px; }
+        .article-meta { display: flex; justify-content: center; gap: 20px; color: var(--text-secondary); font-size: 0.95rem; flex-wrap: wrap; }
+        .category-tag { background-color: var(--link-color); color: white; padding: 4px 14px; border-radius: 20px; }
+        .article-content { font-size: 1.05rem; line-height: 1.9; }
+        .article-content h2 { font-size: 1.6rem; margin-top: 2em; margin-bottom: 0.8em; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .article-content h3 { font-size: 1.3rem; margin-top: 1.8em; margin-bottom: 0.7em; }
+        .article-content p { margin-bottom: 1.5em; }
+        .article-content ul, .article-content ol { margin-bottom: 1.5em; padding-left: 2em; }
+        .article-content code { background-color: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+        .article-content pre { background-color: var(--code-bg); padding: 20px; border-radius: 8px; overflow-x: auto; margin-bottom: 1.5em; }
+        .article-content blockquote { border-left: 4px solid var(--blockquote-border); background-color: var(--card-bg); padding: 20px 25px; margin-bottom: 1.5em; font-style: italic; }
+        .article-footer { margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border-color); }
+        .article-tags { margin-bottom: 30px; }
+        .tag-list { display: flex; gap: 10px; flex-wrap: wrap; }
+        .tag { background-color: var(--code-bg); padding: 6px 14px; border-radius: 20px; text-decoration: none; color: var(--text-color); }
         footer {
             background-color: var(--card-bg);
             border-top: 1px solid var(--border-color);
             padding: 30px 20px;
             text-align: center;
         }
-        @media (max-width: 768px) { .nav-links { gap: 1rem; } .article-item { padding: 20px; } }
+        @media (max-width: 768px) { .article-header h1 { font-size: 1.6rem; } .nav-links { gap: 1rem; } }
     </style>
 </head>
 <body>
@@ -96,31 +95,24 @@
     </nav>
 
     <main>
-        <div class="page-header">
-            <h1>文章列表</h1>
-            <p>共收录 1 篇文章</p>
-        </div>
-        <div class="article-list">
-            <article class="article-item">
-                <h2><a href="article1.html">文章测试</a></h2>
+        <article>
+            <header class="article-header">
+                <h1>文章测试</h1>
                 <div class="article-meta">
-                    <span>2026年5月15日</span>
-                    <span class="category-tag">网页测试</span>
+                    <span>2026年4月15日</span>
+                    <span>阅读时间：无意义</span>
+                    <span class="category-tag">技术测试</span>
                 </div>
-                <p class="article-excerpt">这是一个文章测试页面，没啥可以看的……</p>
-                <a href="article1.html" class="read-more">阅读全文 →</a>
-            </article>
-                    <div class="article-list">
-            <article class="article-item">
-                <h2><a href="article1.html">文章测试</a></h2>
-                <div class="article-meta">
-                    <span>2026年5月15日</span>
-                    <span class="category-tag">网页测试</span>
-                </div>
-                <p class="article-excerpt">这是一个文章测试页面，没啥可以看的……</p>
-                <a href="article1.html" class="read-more">阅读全文 →</a>
-            </article>
-        </div>
+            </header>
+            <div class="article-content">
+                <p>这篇文章只是测试代码是否可以正常运行，完全可以忽略</p>
+                <h2>TEST一级文本显示内容</h2>
+                <p>test二级文本显示内存</p>
+            </div>
+            <footer class="article-footer">
+                <div class="article-tags"><h4>标签：</h4><div class="tag-list"><a href="#" class="tag">前端开发</a><a href="#" class="tag">学习笔记</a><a href="#" class="tag">JavaScript</a></div></div>
+            </footer>
+        </article>
     </main>
 
     <footer>

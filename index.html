@@ -1,27 +1,22 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- 页面编码和视口设置 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人博客 - 首页</title>
-    
-    <!-- 引入CSS样式 -->
+    <title>Kaylin的个人博客 - 首页</title>
+    <link rel="icon" href="logo.ico" type="image/x-icon">
     <style>
-        /* ==================== 基础变量定义 ==================== */
-        /* 定义亮色模式的颜色变量 */
         :root {
-            --bg-color: #f5f5f5;          /* 页面背景色 */
-            --card-bg: #ffffff;            /* 卡片背景色 */
-            --text-color: #333333;         /* 主要文字颜色 */
-            --text-secondary: #666666;     /* 次要文字颜色 */
-            --border-color: #e0e0e0;       /* 边框颜色 */
-            --link-color: #0066cc;         /* 链接颜色 */
-            --link-hover: #0052a3;         /* 链接悬停颜色 */
-            --shadow: rgba(0, 0, 0, 0.1);  /* 阴影颜色 */
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --link-color: #0066cc;
+            --link-hover: #0052a3;
+            --shadow: rgba(0, 0, 0, 0.1);
         }
 
-        /* 定义暗色模式的颜色变量 */
         [data-theme="dark"] {
             --bg-color: #1a1a1a;
             --card-bg: #2d2d2d;
@@ -33,11 +28,14 @@
             --shadow: rgba(0, 0, 0, 0.3);
         }
 
-        /* ==================== 基础样式重置 ==================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
         }
 
         body {
@@ -45,15 +43,25 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s; /* 主题切换时的过渡动画 */
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* ==================== 导航栏样式 ==================== */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
         nav {
             background-color: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
             padding: 1rem 0;
-            position: sticky;  /* 导航栏固定在顶部 */
+            position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 4px var(--shadow);
@@ -68,7 +76,6 @@
             align-items: center;
         }
 
-        /* 博客Logo/标题 */
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
@@ -76,7 +83,6 @@
             text-decoration: none;
         }
 
-        /* 导航链接容器 */
         .nav-links {
             display: flex;
             gap: 2rem;
@@ -94,13 +100,11 @@
             color: var(--link-color);
         }
 
-        /* 当前页面的导航链接高亮 */
         .nav-links a.active {
             color: var(--link-color);
             font-weight: 500;
         }
 
-        /* ==================== 主题切换按钮 ==================== */
         .theme-toggle {
             background: none;
             border: 1px solid var(--border-color);
@@ -116,14 +120,6 @@
             background-color: var(--border-color);
         }
 
-        /* ==================== 主要内容区域 ==================== */
-        main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        /* ==================== 首页欢迎区域 ==================== */
         .hero {
             text-align: center;
             padding: 80px 20px;
@@ -136,7 +132,6 @@
         .hero h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
-            color: var(--text-color);
         }
 
         .hero p {
@@ -146,7 +141,6 @@
             margin: 0 auto 30px;
         }
 
-        /* 行动按钮 */
         .btn {
             display: inline-block;
             padding: 12px 30px;
@@ -154,7 +148,6 @@
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 1rem;
             transition: background-color 0.3s;
         }
 
@@ -162,13 +155,49 @@
             background-color: var(--link-hover);
         }
 
-        /* ==================== 页脚样式 ==================== */
+        .recent-posts {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 35px;
+            border: 1px solid var(--border-color);
+        }
+
+        .recent-posts h2 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .post-preview {
+            margin-bottom: 25px;
+        }
+
+        .post-preview h3 a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .post-preview h3 a:hover {
+            color: var(--link-color);
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 8px 0;
+        }
+
+        .post-excerpt {
+            color: var(--text-secondary);
+        }
+
         footer {
             background-color: var(--card-bg);
             border-top: 1px solid var(--border-color);
             padding: 30px 20px;
             text-align: center;
-            margin-top: 60px;
         }
 
         footer p {
@@ -176,101 +205,62 @@
             font-size: 0.9rem;
         }
 
-        /* ==================== 响应式设计 ==================== */
         @media (max-width: 768px) {
-            .nav-links {
-                gap: 1rem;
-                font-size: 0.9rem;
-            }
-
-            .hero h1 {
-                font-size: 1.8rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .article-grid {
-                grid-template-columns: 1fr;
-            }
+            .nav-links { gap: 1rem; }
+            .hero h1 { font-size: 1.8rem; }
+            .hero p { font-size: 1rem; }
         }
     </style>
 </head>
 <body>
-    <!-- ==================== 导航栏 ==================== -->
     <nav>
         <div class="nav-container">
-            <!-- 博客Logo -->
             <a href="index.html" class="logo">Kaylin博客</a>
-            
-            <!-- 导航链接 -->
             <div class="nav-links">
                 <a href="index.html" class="active">首页</a>
                 <a href="articles.html">文章列表</a>
                 <a href="about.html">关于我</a>
-                <!-- 主题切换按钮 -->
-                <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                <button class="theme-toggle" onclick="toggleTheme()">
                     <span id="theme-icon">🌙</span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <!-- ==================== 主要内容 ==================== -->
     <main>
-        <!-- 欢迎区域 -->
         <section class="hero">
             <h1>欢迎来到Kaylin Blog</h1>
             <p>这里记录着我的学习笔记,希望我的文章能给你带来一些启发和帮助。</p>
             <a href="articles.html" class="btn">浏览文章</a>
         </section>
 
-    <!-- ==================== 页脚 ==================== -->
+        <div class="recent-posts">
+            <h2>最新日志</h2>
+            <div class="post-preview">
+                <h3><a href="article.html">如何学习前端开发</a></h3>
+                <div class="post-meta">2026年4月15日 </div>
+                <p class="post-excerpt">在通宵一夜之后，我这个代码小白成功的将博客部署到Github上了.</p>
+            </div>
+        </div>
+    </main>
+
     <footer>
-        <p>&copy; 2026 Kaylin Blog. 保留所有权利. 页面使用AI编写</p>
+        <p>&copy; 2026 Kaylin Cloudink. 保留所有权利. 网站使用AI编写</p>
     </footer>
 
-    <!-- ==================== JavaScript代码 ==================== -->
     <script>
-        /**
-         * 主题切换功能
-         * 使用localStorage保存用户的主题偏好，刷新页面后仍然有效
-         */
-        
-        // 获取当前主题（从localStorage读取，如果没有则使用亮色模式）
-        function getCurrentTheme() {
-            return localStorage.getItem('theme') || 'light';
-        }
-
-        // 设置主题
+        function getCurrentTheme() { return localStorage.getItem('theme') || 'light'; }
         function setTheme(theme) {
-            // 设置data-theme属性，CSS会根据这个属性切换颜色
             document.documentElement.setAttribute('data-theme', theme);
-            // 保存到localStorage
             localStorage.setItem('theme', theme);
-            // 更新按钮图标
-            updateThemeIcon(theme);
-        }
-
-        // 更新主题切换按钮的图标
-        function updateThemeIcon(theme) {
             const icon = document.getElementById('theme-icon');
-            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
         }
-
-        // 切换主题（亮色/暗色）
         function toggleTheme() {
-            const currentTheme = getCurrentTheme();
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            setTheme(newTheme);
+            const current = getCurrentTheme();
+            setTheme(current === 'light' ? 'dark' : 'light');
         }
-
-        // 页面加载时初始化主题
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedTheme = getCurrentTheme();
-            setTheme(savedTheme);
-        });
+        document.addEventListener('DOMContentLoaded', () => setTheme(getCurrentTheme()));
     </script>
 </body>
 </html>
