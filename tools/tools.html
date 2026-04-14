@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实用工具 - Kaylin博客</title>
+    <link rel="icon" href="logo.ico" type="image/x-icon">
+    <style>
+        /* ========== 完全复用博客主样式，保证视觉一致性 ========== */
+        :root {
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --link-color: #0066cc;
+            --link-hover: #0052a3;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --tool-bg: #f9f9f9;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --link-color: #66b3ff;
+            --link-hover: #99ccff;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --tool-bg: #383838;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main { flex: 1; max-width: 1000px; margin: 0 auto; padding: 40px 20px; width: 100%; }
+        nav {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--text-color); text-decoration: none; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: var(--text-color); text-decoration: none; font-size: 1rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--link-color); }
+        .nav-links a.active { color: var(--link-color); font-weight: 500; }
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+        .theme-toggle:hover { background-color: var(--border-color); }
+
+        /* 工具页面专用样式 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .tool-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: var(--text-color);
+            display: block;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px var(--shadow);
+            border-color: var(--link-color);
+        }
+        .tool-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        .tool-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        .tool-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        footer p { color: var(--text-secondary); font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .nav-links { gap: 1rem; }
+            .tools-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Kaylin博客</a>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="articles.html">文章列表</a>
+                <a href="tools.html" class="active">工具</a>
+                <a href="about.html">关于我</a>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="page-header">
+            <h1>🛠️ 实用工具箱</h1>
+            <p>收集一些方便的小工具，点击卡片即可使用。</p>
+        </div>
+
+        <!-- 
+            ========================================================
+            工具列表区域
+            每个 .tool-card 对应一个工具，href 指向 tools/ 文件夹下的 html 文件。
+            您可以根据需要添加、删除或修改卡片内容。
+            示例中包含了两个占位工具，请将实际的 html 文件放入同目录下的 tools/ 文件夹中。
+            例如：tools/example1.html, tools/example2.html
+            ========================================================
+        -->
+        <div class="tools-grid">
+            <!-- 工具卡片 1 - 示例，指向 tools/example1.html -->
+            <a href="tools/todolist.html" class="tool-card">
+                <div class="tool-icon">📝</div>
+                <h3>待做事项表</h3>
+                <p>待做事项表，用于列出待做清单。</p>
+                <!-- 注释：请将实际文件放在 tools/markdown-editor.html，并修改 href 路径 -->
+            </a>
+
+            <!-- 工具卡片 2 - 示例，指向 tools/example2.html -->
+            <a href="tools/resttime.html" class="tool-card">
+                <div class="tool-icon">⏲️</div>
+                <h3>倒计时工具</h3>
+                <p>可显示剩余时间，以及进度条。</p>
+                <!-- 注释：请将实际文件放在 tools/color-palette.html，并修改 href -->
+            </a>
+
+            <!-- 
+                ========== 添加新工具的方法 ==========
+                1. 在上方 .tools-grid 容器内复制一份 <a class="tool-card"> 结构。
+                2. 修改 href 为 "tools/你的文件名.html"。
+                3. 修改图标（emoji）、标题和描述文字。
+                4. 确保对应的 html 文件存在于 "tools" 文件夹内。
+            -->
+        </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Kaylin Cloudink. 保留所有权利. 网站使用AI编写</p>
+    </footer>
+
+    <script>
+        // 主题切换逻辑（与全站保持一致）
+        function getCurrentTheme() { return localStorage.getItem('theme') || 'light'; }
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        function toggleTheme() {
+            const current = getCurrentTheme();
+            setTheme(current === 'light' ? 'dark' : 'light');
+        }
+        document.addEventListener('DOMContentLoaded', () => setTheme(getCurrentTheme()));
+    </script>
+</body>
+</html>
