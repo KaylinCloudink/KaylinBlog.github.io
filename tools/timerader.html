@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>117报时台 · 国家授时中心校准</title>
+    <link rel="icon" href="logo.ico" type="image/x-icon">
+    <style>
+        /* ==================== 变量定义 ==================== */
+        :root {
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --link-color: #0066cc;
+            --link-hover: #0052a3;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --accent-bg: #f0f7ff;
+            --clock-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            --sync-success: #10b981;
+            --sync-warning: #f59e0b;
+            --sync-error: #ef4444;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --link-color: #66b3ff;
+            --link-hover: #99ccff;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --accent-bg: #1e2a3a;
+            --clock-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            --sync-success: #34d399;
+            --sync-warning: #fbbf24;
+            --sync-error: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 导航栏 */
+        nav {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px var(--shadow);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--link-color);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--border-color);
+        }
+
+        /* 报时卡片 */
+        .time-card {
+            background-color: var(--card-bg);
+            border-radius: 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--clock-shadow);
+            padding: 2rem;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .time-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            gap: 10px;
+        }
+
+        .time-header h1 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            background: linear-gradient(120deg, var(--link-color), #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .badge {
+            background-color: var(--accent-bg);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: var(--link-color);
+            border: 1px solid var(--border-color);
+        }
+
+        /* 主时钟 */
+        .clock-display {
+            margin: 2rem 0;
+        }
+
+        .current-time {
+            font-size: 4.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            letter-spacing: 4px;
+            color: var(--text-color);
+            background: var(--accent-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 60px;
+            display: inline-block;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05), 0 4px 12px var(--shadow);
+        }
+
+        .date-info {
+            margin-top: 16px;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* 同步状态条 */
+        .sync-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            background-color: var(--accent-bg);
+            border-radius: 40px;
+            margin: 16px 0;
+        }
+
+        .sync-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .sync-badge.success {
+            background-color: var(--sync-success);
+            color: white;
+        }
+
+        .sync-badge.warning {
+            background-color: var(--sync-warning);
+            color: white;
+        }
+
+        .sync-badge.error {
+            background-color: var(--sync-error);
+            color: white;
+        }
+
+        .sync-badge.syncing {
+            background-color: var(--link-color);
+            color: white;
+        }
+
+        .manual-sync-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+
+        .manual-sync-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        /* 简洁控制区 */
+        .control-area {
+            background-color: var(--accent-bg);
+            border-radius: 28px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-switch input {
+            width: 44px;
+            height: 24px;
+            appearance: none;
+            background-color: var(--border-color);
+            border-radius: 24px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .toggle-switch input:checked {
+            background-color: var(--link-color);
+        }
+
+        .toggle-switch input::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
+        }
+
+        .toggle-switch input:checked::before {
+            left: 22px;
+        }
+
+        .preview-btn {
+            background: var(--link-color);
+            border: none;
+            padding: 6px 20px;
+            border-radius: 30px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .preview-btn:hover {
+            transform: scale(0.96);
+        }
+
+        .next-announce {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .calibration-note {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 16px;
+        }
+
+        footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 560px) {
+            .current-time {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+            .time-header h1 {
+                font-size: 1.3rem;
+            }
+            .control-area {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Kaylin博客</a>
+            <div class="nav-links">
+                <a href="https://kaylincloudink.github.io/KaylinBlog.github.io/">首页</a>
+                <a href="https://kaylincloudink.github.io/KaylinBlog.github.io/articles.html">文章列表</a>
+                <a href="https://kaylincloudink.github.io/KaylinBlog.github.io/tools.html">工具</a>
+                <a href="https://kaylincloudink.github.io/BiogOther.github.io/index.html">其他页面</a>
+                <a href="https://kaylincloudink.github.io/KaylinBlog.github.io/about.html">关于我</a>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="time-card">
+            <div class="time-header">
+                <h1>📞 117 报时台</h1>
+                <span class="badge">国家授时中心 · 精准同步</span>
+            </div>
+
+            <div class="clock-display">
+                <div class="current-time" id="liveClock">--:--:--</div>
+                <div class="date-info" id="dateInfo">----年--月--日 星期-</div>
+            </div>
+
+            <!-- 同步状态栏 -->
+            <div class="sync-status">
+                <div class="sync-info">
+                    <span>🕐 时间源：</span>
+                    <span id="timeSource">国家授时中心 (NTP)</span>
+                </div>
+                <div class="sync-info">
+                    <span>📡 同步状态：</span>
+                    <span id="syncBadge" class="sync-badge syncing">同步中...</span>
+                </div>
+                <button class="manual-sync-btn" id="manualSyncBtn">⟳ 手动同步</button>
+            </div>
+
+            <!-- 简洁控制区：仅报时开关 + 预览 -->
+            <div class="control-area">
+                <div class="toggle-switch">
+                    <input type="checkbox" id="announceToggle" checked>
+                    <span>🔔 报时开启</span>
+                </div>
+                <button class="preview-btn" id="previewBtn">🎤 试听报时</button>
+            </div>
+
+            <div class="next-announce" id="nextAnnounce">
+                📢 下次报时: <span id="nextCountdown">10</span> 秒后
+            </div>
+
+            <div class="calibration-note">
+                🌐 时间源：中国科学院国家授时中心 NTP 服务器 | 每10秒报时一次，报时内容为“下面一响，当前时间+10秒的时分秒”<br>
+                📞 原 117 报时业务号码，本页面复刻传统报时台风格
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Kaylin Cloudink. 保留所有权利. 117报时台 | 采用国家授时中心 NTP 精准同步</p>
+    </footer>
+
+    <script>
+        // ==================== 117报时台 - 报时未来10秒 ====================
+        // 固定每10秒报时，报时内容朗读“当前时间+10秒”的时分秒
+        
+        let announceEnabled = true;          // 报时总开关
+        let announceInterval = 10;           // 固定10秒
+        let nextAnnounceSeconds = 10;         // 倒计时秒数
+        
+        let timerInterval = null;              // 主定时器
+        let timeOffset = 0;                    // 本地与标准时间的偏移量（毫秒）
+        let syncStatus = 'syncing';            // 'syncing', 'success', 'error'
+        
+        // DOM 元素
+        const liveClockSpan = document.getElementById('liveClock');
+        const dateInfoSpan = document.getElementById('dateInfo');
+        const nextCountdownSpan = document.getElementById('nextCountdown');
+        const announceToggle = document.getElementById('announceToggle');
+        const previewBtn = document.getElementById('previewBtn');
+        const manualSyncBtn = document.getElementById('manualSyncBtn');
+        const syncBadgeSpan = document.getElementById('syncBadge');
+        const timeSourceSpan = document.getElementById('timeSource');
+        
+        // ---------- 时间同步核心 ----------
+        async function fetchNTPTime() {
+            try {
+                const response = await fetch('https://api.shijian.online/timestamp/');
+                if (!response.ok) throw new Error('NTP API 请求失败');
+                const data = await response.json();
+                if (data.status === 1 && data.data && data.data.timestamp) {
+                    return new Date(data.data.timestamp);
+                }
+                throw new Error('NTP 数据格式错误');
+            } catch (err) {
+                console.warn('NTP API 获取失败，尝试备用:', err.message);
+                return null;
+            }
+        }
+        
+        async function fetchWorldTimeAPI() {
+            try {
+                const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Shanghai');
+                if (!response.ok) throw new Error('WorldTime API 请求失败');
+                const data = await response.json();
+                const utcTime = new Date(data.utc_datetime);
+                const offsetSeconds = data.raw_offset;
+                return new Date(utcTime.getTime() + offsetSeconds * 1000);
+            } catch (err) {
+                console.warn('WorldTime API 获取失败:', err.message);
+                return null;
+            }
+        }
+        
+        async function syncServerTime(showToast = false) {
+            syncStatus = 'syncing';
+            updateSyncUI();
+            
+            let serverDate = await fetchNTPTime();
+            if (!serverDate) {
+                serverDate = await fetchWorldTimeAPI();
+                if (serverDate) {
+                    timeSourceSpan.innerText = '世界时间 API (备用)';
+                } else {
+                    syncStatus = 'error';
+                    updateSyncUI();
+                    if (showToast) alert('时间同步失败，使用本地时间，请检查网络');
+                    return false;
+                }
+            } else {
+                timeSourceSpan.innerText = '国家授时中心 NTP (api.shijian.online)';
+            }
+            
+            const nowLocal = new Date();
+            const newOffset = serverDate.getTime() - nowLocal.getTime();
+            timeOffset = newOffset;
+            localStorage.setItem('timeOffset', timeOffset);
+            localStorage.setItem('lastSyncTime', Date.now());
+            
+            syncStatus = 'success';
+            updateSyncUI();
+            
+            // 同步后重置倒计时
+            if (announceEnabled) resetCountdown();
+            
+            if (showToast) {
+                const msg = `同步成功，误差约 ${Math.abs(Math.round(timeOffset / 1000))} 秒`;
+                showTemporaryMessage(msg);
+            }
+            return true;
+        }
+        
+        function updateSyncUI() {
+            syncBadgeSpan.className = 'sync-badge ' + syncStatus;
+            switch(syncStatus) {
+                case 'syncing': syncBadgeSpan.innerText = '同步中...'; break;
+                case 'success': syncBadgeSpan.innerText = '已同步 ✓'; break;
+                case 'error': syncBadgeSpan.innerText = '同步失败，使用本地时间'; break;
+            }
+        }
+        
+        function getCurrentCalibratedTime() {
+            const nowLocal = new Date();
+            return new Date(nowLocal.getTime() + timeOffset);
+        }
+        
+        function updateDisplay() {
+            const now = getCurrentCalibratedTime();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            liveClockSpan.innerText = `${hours}:${minutes}:${seconds}`;
+            
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const weekday = weekdays[now.getDay()];
+            dateInfoSpan.innerText = `${year}年${month}月${day}日 ${weekday}`;
+            
+            return now;
+        }
+        
+        // ---------- 语音报时（朗读未来10秒后的时间） ----------
+        function playBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 880;
+                gainNode.gain.value = 0.3;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {}
+        }
+        
+        function speakCurrentTime() {
+            if (!announceEnabled) return;
+            const now = getCurrentCalibratedTime();
+            // 计算未来10秒后的时间
+            const future = new Date(now.getTime() + 10 * 1000);
+            const hours = future.getHours();
+            const minutes = future.getMinutes();
+            const seconds = future.getSeconds();
+            const timeText = `下面一响，${hours}时${minutes}分${seconds}秒`;
+            const fullText = `滴，${timeText}，滴`;
+            
+            playBeep();
+            setTimeout(() => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(fullText);
+                    utterance.lang = 'zh-CN';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.0;
+                    utterance.onend = () => playBeep();
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    playBeep();
+                }
+            }, 100);
+        }
+        
+        // ---------- 倒计时与主循环 ----------
+        function resetCountdown() {
+            nextAnnounceSeconds = announceInterval;
+            nextCountdownSpan.innerText = nextAnnounceSeconds;
+        }
+        
+        function updateCountdown() {
+            if (!announceEnabled) {
+                nextCountdownSpan.innerText = '--';
+                return;
+            }
+            if (nextAnnounceSeconds <= 1) {
+                speakCurrentTime();      // 每次报时朗读未来10秒后的时间
+                nextAnnounceSeconds = announceInterval;
+            } else {
+                nextAnnounceSeconds--;
+            }
+            nextCountdownSpan.innerText = nextAnnounceSeconds;
+        }
+        
+        function tick() {
+            updateDisplay();
+            updateCountdown();
+        }
+        
+        function setAnnounceEnabled(enabled) {
+            announceEnabled = enabled;
+            if (enabled) {
+                resetCountdown();
+            } else {
+                nextCountdownSpan.innerText = '--';
+                window.speechSynthesis?.cancel();
+            }
+        }
+        
+        function showTemporaryMessage(msg) {
+            const div = document.createElement('div');
+            div.innerText = msg;
+            div.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 40px;
+                padding: 8px 20px;
+                font-size: 0.85rem;
+                z-index: 1000;
+                box-shadow: var(--clock-shadow);
+                color: var(--text-color);
+            `;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+        
+        async function init() {
+            const savedOffset = localStorage.getItem('timeOffset');
+            const lastSync = localStorage.getItem('lastSyncTime');
+            if (savedOffset && lastSync && (Date.now() - parseInt(lastSync) < 3600000)) {
+                timeOffset = parseInt(savedOffset);
+                syncStatus = 'success';
+            } else {
+                await syncServerTime(false);
+            }
+            updateSyncUI();
+            
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => tick(), 1000);
+            setInterval(() => syncServerTime(false), 600000);
+            
+            announceToggle.addEventListener('change', (e) => setAnnounceEnabled(e.target.checked));
+            previewBtn.addEventListener('click', () => speakCurrentTime());
+            manualSyncBtn.addEventListener('click', () => syncServerTime(true));
+            
+            setAnnounceEnabled(true);
+            tick();
+        }
+        
+        // 主题切换
+        function getCurrentTheme() { return localStorage.getItem('theme') || 'light'; }
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        function toggleTheme() {
+            const current = getCurrentTheme();
+            setTheme(current === 'light' ? 'dark' : 'light');
+        }
+        
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                updateDisplay();
+                if (announceEnabled) resetCountdown();
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setTheme(getCurrentTheme());
+            init();
+        });
+    </script>
+</body>
+</html>
