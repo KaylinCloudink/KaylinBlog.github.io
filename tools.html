@@ -6,181 +6,269 @@
     <title>实用工具 - Kaylin博客</title>
     <link rel="icon" href="logo.ico" type="image/x-icon">
     <style>
-        /* ========== 完全复用博客主样式，保证视觉一致性 ========== */
+        /* ============================================
+           玻璃拟态博客 - 工具页面样式
+           Glassmorphism Blog - Tools Page
+           ============================================ */
         :root {
-            --bg-color: #f5f5f5;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --text-secondary: #666666;
-            --border-color: #e0e0e0;
-            --link-color: #0066cc;
-            --link-hover: #0052a3;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --tool-bg: #f9f9f9;
+            --bg-primary: #0f0c29;
+            --bg-secondary: #302b63;
+            --bg-tertiary: #24243e;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-bg-hover: rgba(255, 255, 255, 0.14);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-blur: 20px;
+            --glass-radius: 24px;
+            --accent-gradient: linear-gradient(135deg, #7c3aed, #ec4899);
+            --accent-purple: #7c3aed;
+            --accent-pink: #ec4899;
+            --accent-blue: #6c8afd;
+            --text-primary: rgba(255, 255, 255, 0.95);
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.35);
         }
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-color: #e0e0e0;
-            --text-secondary: #b0b0b0;
-            --border-color: #404040;
-            --link-color: #66b3ff;
-            --link-hover: #99ccff;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --tool-bg: #383838;
-        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { height: 100%; }
+        html { height: 100%; scroll-behavior: smooth; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+            color: var(--text-primary);
             line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
-        main { flex: 1; max-width: 1000px; margin: 0 auto; padding: 40px 20px; width: 100%; }
+
+        /* 背景光斑 */
+        body::before, body::after {
+            content: ''; position: fixed; border-radius: 50%;
+            pointer-events: none; z-index: 0;
+        }
+        body::before {
+            top: -10%; right: -5%; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(139,92,246,0.35) 0%, transparent 70%);
+            filter: blur(80px);
+        }
+        body::after {
+            bottom: 5%; left: -8%; width: 450px; height: 450px;
+            background: radial-gradient(circle, rgba(236,72,153,0.25) 0%, transparent 70%);
+            filter: blur(80px);
+        }
+        .bg-blob-blue {
+            position: fixed; top: 40%; left: 25%; width: 350px; height: 350px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108,138,253,0.2) 0%, transparent 70%);
+            filter: blur(60px); pointer-events: none; z-index: 0;
+        }
+
+        /* 导航栏 */
         nav {
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 4px var(--shadow);
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0.8rem 0; position: sticky; top: 0; z-index: 100;
         }
         .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .logo { font-size: 1.5rem; font-weight: bold; color: var(--text-color); text-decoration: none; }
-        .nav-links { display: flex; gap: 2rem; align-items: center; }
-        .nav-links a { color: var(--text-color); text-decoration: none; font-size: 1rem; transition: color 0.3s; }
-        .nav-links a:hover { color: var(--link-color); }
-        .nav-links a.active { color: var(--link-color); font-weight: 500; }
-        .theme-toggle {
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 1rem;
-            color: var(--text-color);
-            transition: all 0.3s;
+        .logo {
+            font-size: 1.4rem; font-weight: 700; text-decoration: none;
+            background: linear-gradient(135deg, #c4b5fd, #f9a8d4);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-        .theme-toggle:hover { background-color: var(--border-color); }
+        .nav-links { display: flex; gap: 0.5rem; align-items: center; }
+        .nav-links a {
+            color: var(--text-secondary); text-decoration: none; font-size: 0.85rem;
+            padding: 6px 14px; border-radius: 10px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.25s ease;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary); background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.15);
+        }
 
-        /* 工具页面专用样式 */
+        /* 主内容 */
+        main {
+            flex: 1; max-width: 1000px; margin: 0 auto;
+            padding: 2.5rem 1.5rem; width: 100%;
+            position: relative; z-index: 1;
+        }
+
+        /* ============================================
+           页面标题区 - 玻璃容器
+           Page Header
+           ============================================ */
         .page-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 2.5rem;
+            padding: 2.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--glass-radius);
         }
+
         .page-header h1 {
             font-size: 2.2rem;
-            margin-bottom: 10px;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, rgba(196,181,253,0.85) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
+
         .page-header p {
             color: var(--text-secondary);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
+
+        /* ============================================
+           工具卡片网格 - 玻璃拟态风格
+           Tools Grid
+           ============================================ */
         .tools-grid {
             display: grid;
+            /* 自适应列宽，最小280px */
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
+            gap: 1.25rem;
         }
+
+        /* 单个工具卡片 */
         .tool-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 25px 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            /* 玻璃卡片基础样式 */
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
             text-decoration: none;
-            color: var(--text-color);
+            color: var(--text-primary);
             display: block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
+
+        /* 卡片悬浮效果：亮度增加 + 上浮 + 紫色光晕 */
         .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px var(--shadow);
-            border-color: var(--link-color);
+            background: var(--glass-bg-hover);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.2);
         }
+
+        /* 工具图标 */
         .tool-icon {
             font-size: 2.5rem;
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
+            /* 图标容器：渐变圆形背景 */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: rgba(124, 58, 237, 0.15);
+            border: 1px solid rgba(124, 58, 237, 0.2);
         }
+
         .tool-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
+
         .tool-card p {
             color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
+
+        /* 工具卡片右下角装饰箭头 */
+        .tool-card::after {
+            content: '→';
+            position: absolute;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover::after {
+            color: #c4b5fd;
+            transform: translateX(4px);
+        }
+
+        /* 页脚 */
         footer {
-            background-color: var(--card-bg);
-            border-top: 1px solid var(--border-color);
-            padding: 30px 20px;
-            text-align: center;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 2rem 1.5rem; text-align: center;
+            position: relative; z-index: 1;
         }
-        footer p { color: var(--text-secondary); font-size: 0.9rem; }
+        footer p { color: var(--text-muted); font-size: 0.8rem; }
+
+        /* 响应式 */
         @media (max-width: 768px) {
-            .nav-links { gap: 1rem; }
+            .nav-links { gap: 0.25rem; }
+            .nav-links a { padding: 5px 10px; font-size: 0.75rem; }
             .tools-grid { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
+    <div class="bg-blob-blue"></div>
+
+    <!-- 导航栏 -->
     <nav>
         <div class="nav-container">
-            <a href="index.html" class="logo">Kaylin博客</a>
+            <a href="index.html" class="logo">Kaylin Blog</a>
             <div class="nav-links">
                 <a href="index.html">首页</a>
-                <a href="articles.html">文章列表</a>
+                <a href="articles.html">文章</a>
                 <a href="tools.html" class="active">工具</a>
-                <a href="https://kaylincloudink.github.io/BiogOther.github.io/index.html">其他页面</a>
-                <a href="about.html">关于我</a>
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <span id="theme-icon">🌙</span>
-                </button>
+                <a href="https://kaylincloudink.github.io/BiogOther.github.io/index.html">其他</a>
+                <a href="about.html">关于</a>
             </div>
         </div>
     </nav>
 
     <main>
+        <!-- 页面标题 -->
         <div class="page-header">
-            <h1>🛠️ 实用工具箱</h1>
+            <h1>实用工具箱</h1>
             <p>收集一些方便的小工具，点击卡片即可使用。</p>
         </div>
 
-        <!-- 
-            ========================================================
-            工具列表区域
-            每个 .tool-card 对应一个工具，href 指向 tools/ 文件夹下的 html 文件。
-            您可以根据需要添加、删除或修改卡片内容。
-            示例中包含了两个占位工具，请将实际的 html 文件放入同目录下的 tools/ 文件夹中。
-            例如：tools/example1.html, tools/example2.html
-            ========================================================
-        -->
+        <!-- ============================================
+             工具卡片网格
+             每个 .tool-card 对应一个工具
+             href 指向 tools/ 文件夹下的 HTML 文件
+             ============================================ -->
         <div class="tools-grid">
+            <!-- 工具1：待做事项表 -->
             <a href="tools/todolist.html" class="tool-card">
                 <div class="tool-icon">📝</div>
                 <h3>待做事项表</h3>
                 <p>待做事项表，用于列出待做清单。</p>
             </a>
 
+            <!-- 工具2：倒计时工具 -->
             <a href="tools/resttime.html" class="tool-card">
                 <div class="tool-icon">⏲️</div>
                 <h3>倒计时工具</h3>
                 <p>可显示剩余时间，以及进度条。</p>
             </a>
 
+            <!-- 工具3：仿1127报时台 -->
             <a href="tools/timerader.html" class="tool-card">
                 <div class="tool-icon">🔔</div>
                 <h3>仿1127报时台</h3>
@@ -189,34 +277,16 @@
 
             <!-- 
                 ========== 添加新工具的方法 ==========
-                1. 在上方 .tools-grid 容器内复制一份 <a class="tool-card"> 结构。
-                2. 修改 href 为 "tools/你的文件名.html"。
-                3. 修改图标（emoji）、标题和描述文字。
-                4. 确保对应的 html 文件存在于 "tools" 文件夹内。
+                1. 在上方 .tools-grid 容器内复制一份 <a class="tool-card"> 结构
+                2. 修改 href 为 "tools/你的文件名.html"
+                3. 修改图标（emoji）、标题和描述文字
+                4. 确保对应的 html 文件存在于 "tools" 文件夹内
             -->
-        </div>
-
         </div>
     </main>
 
     <footer>
         <p>&copy; 2026 Kaylin Cloudink. 保留所有权利. 网站使用AI编写</p>
     </footer>
-
-    <script>
-        // 主题切换逻辑（与全站保持一致）
-        function getCurrentTheme() { return localStorage.getItem('theme') || 'light'; }
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            const icon = document.getElementById('theme-icon');
-            if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-        }
-        function toggleTheme() {
-            const current = getCurrentTheme();
-            setTheme(current === 'light' ? 'dark' : 'light');
-        }
-        document.addEventListener('DOMContentLoaded', () => setTheme(getCurrentTheme()));
-    </script>
 </body>
 </html>
